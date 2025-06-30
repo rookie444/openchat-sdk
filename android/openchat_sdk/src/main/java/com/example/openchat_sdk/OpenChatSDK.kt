@@ -87,6 +87,88 @@ class OpenChatSDK private constructor() {
     }
     
     /**
+     * 设置账号信息
+     * @param accountInfo 账号信息
+     * @param callback 回调函数
+     */
+    fun setAccountInfo(accountInfo: AccountInfo, callback: (Boolean, String?) -> Unit) {
+        if (!isInitialized) {
+            callback(false, "SDK未初始化")
+            return
+        }
+        
+        methodChannel?.invokeMethod("setAccountInfo", accountInfo.toMap()) { result ->
+            if (result is Boolean && result) {
+                Log.d(TAG, "账号信息设置成功")
+                callback(true, null)
+            } else {
+                Log.e(TAG, "账号信息设置失败")
+                callback(false, "设置账号信息失败")
+            }
+        }
+    }
+    
+    /**
+     * 登录
+     * @param phone 手机号
+     * @param password 密码
+     * @param countryCode 国家代码
+     * @param callback 回调函数
+     */
+    fun login(phone: String, password: String, countryCode: String = "86", callback: (Boolean, String?) -> Unit) {
+        if (!isInitialized) {
+            callback(false, "SDK未初始化")
+            return
+        }
+        
+        val loginData = mapOf(
+            "phone" to phone,
+            "password" to password,
+            "countryCode" to countryCode
+        )
+        
+        methodChannel?.invokeMethod("login", loginData) { result ->
+            if (result is Boolean && result) {
+                Log.d(TAG, "登录成功")
+                callback(true, null)
+            } else {
+                Log.e(TAG, "登录失败")
+                callback(false, "登录失败")
+            }
+        }
+    }
+    
+    /**
+     * 注册
+     * @param phone 手机号
+     * @param password 密码
+     * @param countryCode 国家代码
+     * @param callback 回调函数
+     */
+    fun register(phone: String, password: String, countryCode: String = "86", callback: (Boolean, String?) -> Unit) {
+        if (!isInitialized) {
+            callback(false, "SDK未初始化")
+            return
+        }
+        
+        val registerData = mapOf(
+            "phone" to phone,
+            "password" to password,
+            "countryCode" to countryCode
+        )
+        
+        methodChannel?.invokeMethod("register", registerData) { result ->
+            if (result is Boolean && result) {
+                Log.d(TAG, "注册成功")
+                callback(true, null)
+            } else {
+                Log.e(TAG, "注册失败")
+                callback(false, "注册失败")
+            }
+        }
+    }
+    
+    /**
      * 打开OpenChat主界面
      * @param activity 当前Activity
      * @param initialRoute 初始路由
@@ -148,6 +230,25 @@ class OpenChatSDK private constructor() {
     }
     
     /**
+     * 检查登录状态
+     * @param callback 回调函数
+     */
+    fun isLoggedIn(callback: (Boolean) -> Unit) {
+        if (!isInitialized) {
+            callback(false)
+            return
+        }
+        
+        methodChannel?.invokeMethod("isLoggedIn", null) { result ->
+            if (result is Boolean) {
+                callback(result)
+            } else {
+                callback(false)
+            }
+        }
+    }
+    
+    /**
      * 登出
      * @param callback 回调函数
      */
@@ -198,11 +299,14 @@ class OpenChatSDK private constructor() {
  * OpenChat配置类
  */
 data class OpenChatConfig(
-    val phone: String,
-    val password: String,
-    val countryCode: String = "",
+    val phone: String = "",
+    val password: String = "",
+    val countryCode: String = "86",
     val uid: Int = 0,
-    val customBaseDir: String? = null
+    val customBaseDir: String? = null,
+    val serverUrl: String = "",
+    val appId: String = "",
+    val appSecret: String = ""
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
@@ -210,7 +314,37 @@ data class OpenChatConfig(
             "password" to password,
             "countryCode" to countryCode,
             "uid" to uid,
-            "customBaseDir" to (customBaseDir ?: "")
+            "customBaseDir" to (customBaseDir ?: ""),
+            "serverUrl" to serverUrl,
+            "appId" to appId,
+            "appSecret" to appSecret
+        )
+    }
+}
+
+/**
+ * 账号信息类
+ */
+data class AccountInfo(
+    val uid: Int,
+    val phone: String,
+    val nickname: String = "",
+    val avatar: String = "",
+    val email: String = "",
+    val countryCode: String = "86",
+    val token: String = "",
+    val refreshToken: String = ""
+) {
+    fun toMap(): Map<String, Any> {
+        return mapOf(
+            "uid" to uid,
+            "phone" to phone,
+            "nickname" to nickname,
+            "avatar" to avatar,
+            "email" to email,
+            "countryCode" to countryCode,
+            "token" to token,
+            "refreshToken" to refreshToken
         )
     }
 } 
