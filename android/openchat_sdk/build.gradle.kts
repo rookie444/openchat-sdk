@@ -2,7 +2,6 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("maven-publish")
-    id("signing")
 }
 
 android {
@@ -51,21 +50,19 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
 
-// Publishing configuration
+// Publishing configuration for JitPack
 afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
                 
-                groupId = "com.example"
-                artifactId = "openchat-sdk"
-                version = "1.0.0"
+                // JitPack 会自动设置 groupId、artifactId、version
                 
                 pom {
                     name.set("OpenChat SDK")
-                    description.set("A Flutter+Rust based chat SDK for Android")
-                    url.set("https://github.com/your-username/openchat-client")
+                    description.set("A Flutter+Rust based chat SDK for Android integration")
+                    url.set("https://github.com/rookie444/openchat-sdk")
                     
                     licenses {
                         license {
@@ -76,53 +73,19 @@ afterEvaluate {
                     
                     developers {
                         developer {
-                            id.set("your-username")
-                            name.set("Your Name")
+                            id.set("rookie444")
+                            name.set("Rookie444")
                             email.set("your-email@example.com")
                         }
                     }
                     
                     scm {
-                        connection.set("scm:git:git://github.com/your-username/openchat-client.git")
-                        developerConnection.set("scm:git:ssh://github.com:your-username/openchat-client.git")
-                        url.set("https://github.com/your-username/openchat-client")
+                        connection.set("scm:git:git://github.com/rookie444/openchat-sdk.git")
+                        developerConnection.set("scm:git:ssh://github.com:rookie444/openchat-sdk.git")
+                        url.set("https://github.com/rookie444/openchat-sdk")
                     }
                 }
             }
-        }
-        
-        repositories {
-            // GitHub Packages
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/your-username/openchat-client")
-                credentials {
-                    username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME")
-                    password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
-                }
-            }
-            
-            // Maven Central (需要申请)
-            maven {
-                name = "MavenCentral"
-                url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                credentials {
-                    username = project.findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
-                    password = project.findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
-                }
-            }
-        }
-    }
-    
-    // Signing configuration (for Maven Central)
-    signing {
-        val signingKeyId = project.findProperty("signing.keyId") as String?
-        val signingPassword = project.findProperty("signing.password") as String?
-        val signingSecretKeyRingFile = project.findProperty("signing.secretKeyRingFile") as String?
-        
-        if (signingKeyId != null) {
-            useInMemoryPgpKeys(signingKeyId, signingSecretKeyRingFile, signingPassword)
-            sign(publishing.publications["release"])
         }
     }
 } 
