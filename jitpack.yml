@@ -1,0 +1,7 @@
+jdk:
+  - openjdk11
+
+script:
+  - cd android
+  - ./gradlew :openchat_sdk:assembleRelease
+  - ./gradlew :openchat_sdk:publishReleasePublicationToMavenLocal 
