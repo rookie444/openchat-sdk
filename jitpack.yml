@@ -1,0 +1,31 @@
+jdk:
+  - openjdk11
+
+before_install:
+  - echo "开始构建OpenChat SDK..."
+
+install:
+  - echo "安装依赖..."
+
+before_script:
+  - echo "准备构建环境..."
+
+script:
+  - echo "构建Flutter AAR..."
+  - flutter build aar --release
+  - echo "构建Android SDK模块..."
+  - cd android
+  - ./gradlew :openchat_sdk:assembleRelease
+  - echo "发布到JitPack..."
+  - ./gradlew :openchat_sdk:publishReleasePublicationToMavenLocal
+
+after_success:
+  - echo "构建成功！"
+
+after_failure:
+  - echo "构建失败！"
+
+# 指定要发布的模块
+artifacts:
+  - android/openchat_sdk/build/outputs/aar/
+  - android/openchat_sdk/build/libs/ 

@@ -1,0 +1,19 @@
+targets:
+  $default:
+    builders:
+      source_gen|combining_builder:
+        generate_for:
+          - lib/**.dart
+        options:
+          build_extensions:
+            "^lib/{{file}}.dart": "lib/generated/{{file}}.g.dart"
+      riverpod_generator:
+        options:
+          output_directory: lib/generated
+      freezed|freezed:
+        enabled: true
+        generate_for:
+          - lib/**.dart
+        options:
+          build_extensions:
+            "^lib/{{file}}.dart": "lib/generated/{{file}}.freezed.dart"
